@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 import jwt 
 
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, DepartmentSerializer, ProfileSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, DepartmentSerializer
 from .models import User, Department
 
 
