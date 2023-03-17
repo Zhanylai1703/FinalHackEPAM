@@ -28,8 +28,8 @@ router.register(r'users/', UserViewSet, basename='users')
 urlpatterns = router.urls
 
 api_v1 = [
-    path('reg/', views.RegisterView.as_view()),
-    path('login/', views.LoginView.as_view()),
+    path('register/', views.RegisterView.as_view(), name='register'),
+    path('login/', views.LoginView.as_view(), name='login'),
 
 ]
 

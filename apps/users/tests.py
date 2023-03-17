@@ -1,36 +1,30 @@
-from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from unittest.mock import patch
-from .models import User
+from apps.users.models import User
 
-class RegisterViewTestCase(APITestCase):
+
+class LoginSerializerTest(APITestCase):
     def setUp(self):
-        self.url = reverse('register')
+        self.user = User.objects.create_user(
+            username='testuser', email='testuser@example.com', password='testpass'
+        )
 
-    @patch('register.views.jwt')
-    def test_register_view(self, mock_jwt):
-        mock_jwt.encode.return_value = 'fake_token'
+    def test_valid_login(self):
+        data = {'email': 'testuser@example.com', 'password': 'testpass'}
+        response = self.client.post('/login/', data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
+        self.assertIn('user_id', response.data)
 
-        # make a POST request to the view with valid user data
-        data = {
-            'username': 'testuser',
-            'password': 'testpassword',
-            'email': 'testuser@example.com'
-        }
-        response = self.client.post(self.url, data, format='json')
+    def test_invalid_email(self):
+        data = {'email': 'invalid@example.com', 'password': 'testpass'}
+        response = self.client.post('/login/', data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('email', response.data)
 
-        # assert that the response status code is 201 CREATED
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # assert that the response contains the expected user ID
-        self.assertEqual(response.data['user_id'], 1)  # assuming this is the first user created in the database
-
-        # assert that the response contains the expected access token and refresh token
-        self.assertEqual(response.data['tokens']['access_token'], 'fake_token')
-        self.assertEqual(response.data['tokens']['refresh_token'], 'fake_token')
-
-        # assert that the User object was created with the correct username and email
-        self.assertEqual(response.data['user_id'], User.objects.first().id)
-        self.assertEqual(User.objects.first().username, 'testuser')
-        self.assertEqual(User.objects.first().email, 'testuser@example.com')
+    def test_invalid_password(self):
+        data = {'email': 'testuser@example.com', 'password': 'wrongpass'}
+        response = self.client.post('/login/', data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('password', response.data)
