@@ -1,16 +1,13 @@
+from django.conf import settings
 from rest_framework import generics, status, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from djoser.views import UserViewSet
+from rest_framework import status
+import jwt 
+
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, DepartmentSerializer, ProfileSerializer
 from .models import User, Department
-from django.contrib.auth import get_user_model
-import jwt
-from django.conf import settings
-from rest_framework import status
 
-
-User = get_user_model()
 
 
 class RegisterView(generics.CreateAPIView):
@@ -56,33 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, permissions.IsAdminUser]
-
-
-# class ProfileViewSet(viewsets.ModelViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = ProfileSerializer
-#     permission_classes = [IsAuthenticated]
-
-
-class ProfileCreateView(generics.CreateAPIView):
-    """Создание профиля"""
-    queryset = User.objects.all()
-    serializer_class = ProfileSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-
-class ProfileListView(generics.ListAPIView):
-    """Получение списка профилей"""
-    queryset = User.objects.all()
-    serializer_class = ProfileSerializer
-    permission_classes = (permissions.IsAdminUser)
-
-
-class ProfileRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    """Получение, обновление и удаление профиля"""
-    queryset = User.objects.all()
-    serializer_class = ProfileSerializer
-    permission_classes = (permissions.IsAdminUser, IsAuthenticated,)
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):

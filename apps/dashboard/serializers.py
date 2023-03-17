@@ -15,4 +15,5 @@ class ReportSerializer(serializers.ModelSerializer):
             'deadline',
             'created_at',
             'updated_at',
+            'sent',
         )
